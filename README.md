@@ -6,18 +6,18 @@ By analyzing text input with TextBlob (sentiment analysis), the app maps your em
 
 Features:
 
-    Detects mood from the user input using TextBloc sentiment analysis.
-    Maps moods to specific Spotify playlists/genres.
-    Displays song details: name, artist, album cover, Spotify link.
-    Simple and clean UI with responsive design.
-    Hover animations and Spotify-themed styling.
+    - Detects mood from the user input using TextBloc sentiment analysis.
+    - Maps moods to specific Spotify playlists/genres.
+    - Displays song details: name, artist, album cover, Spotify link.
+    - Simple and clean UI with responsive design.
+    - Hover animations and Spotify-themed styling.
 
 Tech Stack:
 
-    Backend: Python,Flask
-    NLP: TextBlob
-    Music data: Spotify Web API (spotipy)
-    Frontend: HTML, CSS.
+    - Backend: Python,Flask
+    - NLP: TextBlob
+    - Music data: Spotify Web API (spotipy)
+    - Frontend: HTML, CSS.
 
 Mood Mapping:
 
@@ -32,7 +32,7 @@ TO run the Code: python Server.py
 
 Future improvements: 
 
-    Add speech-to-text input for moods.
-    Personalized playlists (based on listening history).
-    integrate YouTube Music/Apple Music options.
+    - Add speech-to-text input for moods.
+    - Personalized playlists (based on listening history).
+    - integrate YouTube Music/Apple Music options.
     
