@@ -16,8 +16,8 @@ sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
 MOOD_TO_GENRE = {
     "happy":"happy hits",
     "sad":"sad songs",
-    "angry":"rock",
-    "neutral":"chill",
+    "angry":"chill",
+    "neutral":"rock",
     "excited":"party hits",
 }
 
