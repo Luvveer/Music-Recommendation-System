@@ -19,15 +19,6 @@ Tech Stack:
     - Music data: Spotify Web API (spotipy)
     - Frontend: HTML, CSS.
 
-Mood Mapping:
-
-Mood:: SpotifyGenre/playlist
-Happy:: Happy Hits
-Sad:: Sad Songs
-Angry::Rock
-Neutral::Chill
-Excited::Party Hits
-
 TO run the Code: python Server.py
 
 Future improvements: 
