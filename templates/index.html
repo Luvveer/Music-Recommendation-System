@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recommendation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 Music Recommendation System</h1>
+        <form method="POST">
+            <label for="mood">Enter your mood:</label><br>
+            <input type="text" id="mood" name="mood" placeholder="Type how you feel..." required>
+            <button type="submit">🎧 Get Songs</button>
+        </form>
+        
+        {% if songs %}
+            <h2>🎶 Recommended Songs:</h2>
+            <div id="song-list">
+                {% for song in songs %}
+                    <div class="song">
+                        <img src="{{ song.image }}" alt="Album Cover" class="album-cover">
+                        <div class="song-details">
+                            <p class="song-name"><strong>{{ song.name }}</strong></p>
+                            <p class="song-artist">by {{ song.artist }}</p>
+                            <a href="{{ song.url }}" target="_blank" class="spotify-link">🎵 Listen on Spotify</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
