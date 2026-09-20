@@ -1,16 +1,13 @@
 # Music Recommendation System
 
-A Flask web app that reads a short piece of text describing how you feel, classifies the mood with TextBlob sentiment analysis, and recommends a set of tracks pulled live from the Spotify Web API, complete with album art and Spotify links.
-
-![Music Recommendation System screenshot](static/screenshot.png)
-*(Screenshot placeholder — replace `static/screenshot.png` with an actual screenshot or short GIF of the app in use.)*
+A Flask app that reads a sentence about how you're feeling, runs it through TextBlob for sentiment, and pulls back a set of matching tracks from Spotify with album art and links.
 
 ## Features
 
-- Detects mood from free-text input using TextBlob sentiment analysis (happy, sad, angry, excited, neutral).
-- Maps each mood to a Spotify search query/genre and fetches matching tracks via [spotipy](https://spotipy.readthedocs.io/).
-- Displays song name, artist, album cover, and a direct Spotify link.
-- Simple, responsive UI with Spotify-themed styling and hover animations.
+- Detects mood from free-text input (happy, sad, angry, excited, neutral)
+- Maps each mood to a Spotify search query and fetches matching tracks via [spotipy](https://spotipy.readthedocs.io/)
+- Shows song name, artist, album cover, and a Spotify link for each result
+- Simple, responsive UI with Spotify-themed styling
 
 ## Architecture and request flow
 
@@ -34,13 +31,13 @@ Server.py renders templates/index.html with the song list
 Browser displays recommended tracks
 ```
 
-Everything runs server-side per request — there is no database, background job, or caching layer beyond the Spotify auth token cache spotipy writes to disk (see Security below).
+Everything happens server-side, per request. There's no database or background job. The only thing written to disk is the Spotify auth token cache that spotipy manages (see Security below).
 
 ## Prerequisites
 
 - Python 3.9+
-- A Spotify account (free or premium) to create a developer application
-- pip for installing dependencies
+- A Spotify account, to register a developer application
+- pip
 
 ## Installation
 
@@ -55,20 +52,20 @@ pip install -r requirements.txt
 ## Spotify developer application setup
 
 1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and log in.
-2. Click **Create app**, give it a name/description, and accept the terms.
-3. Once created, open the app and copy the **Client ID** and **Client Secret** (click "View client secret").
-4. This app only calls the Client Credentials Flow (no user login), so no redirect URI needs to be configured for it to work, though the dashboard requires one to be set — any placeholder URL (e.g. `http://localhost:8888/callback`) satisfies that requirement.
+2. Click "Create app", fill in a name and description, and accept the terms.
+3. Open the new app and copy the Client ID and Client Secret ("View client secret").
+4. This app only uses the Client Credentials flow, so it never asks a user to log in. The dashboard still requires a redirect URI to be set even though nothing will hit it, so any placeholder like `http://localhost:8888/callback` works.
 
 ## Environment variables
 
-Create a `.env` file in the project root (this file is gitignored and must never be committed):
+Create a `.env` file in the project root (gitignored, never commit it):
 
 ```
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 ```
 
-`Utils/spotify.py` loads these via `python-dotenv` at import time.
+`Utils/spotify.py` loads these with `python-dotenv` on import.
 
 ## Running the app
 
@@ -76,35 +73,35 @@ SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 python Server.py
 ```
 
-Then open `http://127.0.0.1:5000/` in your browser. The app runs in Flask debug mode by default (see `Server.py`) — turn this off before any real deployment.
+Open `http://127.0.0.1:5000/`. The app runs in Flask debug mode by default (`Server.py`); turn that off before deploying anywhere real.
 
 ## Limitations of the sentiment analysis
 
-The mood detection is intentionally simple and has real limitations:
+The mood detection is a small lexicon lookup, not a real emotion model, and it shows:
 
-- **TextBlob's polarity score is lexicon-based**, not context-aware — it doesn't understand negation nuance, sarcasm, idioms, or mixed emotions well (e.g. "I'm not sad" or "great, another Monday" can be misclassified).
-- Only **polarity** is used, not subjectivity, so factual/neutral-sounding statements about strong emotions may be classified as "neutral."
-- The five mood buckets are derived from **arbitrary fixed thresholds** (`> 0.5`, `< -0.5`, `< 0`, `> 0`) rather than a trained classifier, so borderline scores can flip category with small wording changes.
-- TextBlob has no awareness of emojis, slang, or multi-language input; results are least reliable outside of plain, literal English text.
-- Because mood maps to a fixed, small set of Spotify search queries (`MOOD_TO_GENRE` in `Utils/spotify.py`), recommendations are coarse-grained rather than personalized.
+- TextBlob's polarity score doesn't handle negation, sarcasm, idioms, or mixed emotions well. "I'm not sad" or "great, another Monday" can come out wrong.
+- Only polarity is used, not subjectivity, so a flatly-stated strong emotion can land as "neutral."
+- The five mood buckets come from fixed thresholds (`> 0.5`, `< -0.5`, `< 0`, `> 0`), not a trained classifier, so a slight rewording can flip the result across a boundary.
+- No handling for emojis, slang, or non-English text. It works best on plain, literal English.
+- `MOOD_TO_GENRE` in `Utils/spotify.py` maps each mood to one fixed search query, so results are generic rather than personalized.
 
-This is fine for a demo/hobby project but should not be treated as accurate emotional inference.
+Good enough for a demo. Don't read too much into what it says about your actual mood.
 
-## Security note
+## Security
 
-Spotify credentials (`SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`) must **only** live in your local `.env` file, which is excluded from version control via `.gitignore`. Never commit `.env`, hardcode credentials in source files, or paste them into issues/commits.
+Keep `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in your local `.env` file only. Don't hardcode them, commit `.env`, or paste them into an issue or commit message.
 
-Note also that spotipy writes a `.cache` file to disk containing OAuth tokens after authenticating — this is also gitignored and should never be committed. If credentials or cached tokens are ever accidentally committed, rotate them immediately from the Spotify Developer Dashboard, since git history retains old commits even after a file is later removed.
+spotipy also writes a `.cache` file with your OAuth token after the first run. That's gitignored too. If a credential or cache file ever does get committed, rotate it from the Spotify dashboard right away, since removing the file later doesn't remove it from git history.
 
 ## Future improvements
 
-- Add speech-to-text input for moods.
-- Personalized playlists based on listening history.
-- Integrate YouTube Music / Apple Music as alternate sources.
-- Replace lexicon-based sentiment analysis with a trained mood classifier.
+- Speech-to-text input for moods
+- Personalized playlists based on listening history
+- YouTube Music / Apple Music as alternate sources
+- A trained mood classifier instead of TextBlob's lexicon scoring
 
 ## Suggested repository description and topics
 
-**Description:** Flask + Spotify web app that recommends music based on the mood detected in your text, using TextBlob sentiment analysis.
+Description: Flask + Spotify app that recommends music based on the mood in your text, using TextBlob sentiment analysis.
 
-**Topics:** `flask` `python` `spotify` `spotify-api` `spotipy` `textblob` `sentiment-analysis` `nlp` `music-recommendation` `mood-detection`
+Topics: `flask` `python` `spotify` `spotify-api` `spotipy` `textblob` `sentiment-analysis` `nlp` `music-recommendation` `mood-detection`
