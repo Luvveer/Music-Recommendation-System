@@ -1,3 +1,4 @@
 Flask==2.0.1
 spotipy==2.16.1
 textblob==0.15.3
+python-dotenv==1.0.1
